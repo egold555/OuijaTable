@@ -1,7 +1,12 @@
+#include "AFMotor.h"
 
 #define CHAR_TABLE_LEGTH 39
 
-const int LED_PIN = 10;
+const int LIGHT_PIN = 10;
+
+const int SPEED = 100;
+const int X_AMOUNT = 1500;
+const int Y_AMOUNT = 500;
 
 //planchet's current position
 int posX = 0;
@@ -9,6 +14,9 @@ int posY = 0;
 
 long timeNextOn = 0;
 long timeNextOff = 0;
+
+AF_Stepper motorLR(200, 1);
+AF_Stepper motorUD(200, 2);
 
 unsigned int charTable[CHAR_TABLE_LEGTH][3] = {
   0, 0, 'a',
@@ -53,28 +61,55 @@ unsigned int charTable[CHAR_TABLE_LEGTH][3] = {
 };
 
 void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
+  Serial.begin(9600);
+  Serial.println("Hello World!");
+  pinMode(LIGHT_PIN, OUTPUT);
+  digitalWrite(LIGHT_PIN, HIGH);
+  motorLR.setSpeed(SPEED);
+  motorUD.setSpeed(SPEED);
 }
 
 void loop() {
-  ledFlicker();
+  serialCalbrate();
 }
 
-void ledFlicker(){
+void lightFlicker() {
   long currentTime = millis();
-  bool on = !digitalRead(LED_PIN);
-  if(!on && currentTime > timeNextOn){
-    digitalWrite(LED_PIN, LOW);
+  bool on = !digitalRead(LIGHT_PIN);
+  if (!on && currentTime > timeNextOn) {
+    digitalWrite(LIGHT_PIN, LOW);
     timeNextOff = currentTime + random(100, 10000); //on for
   }
-  else if(on && currentTime > timeNextOff){
-    digitalWrite(LED_PIN, HIGH);
+  else if (on && currentTime > timeNextOff) {
+    digitalWrite(LIGHT_PIN, HIGH);
     timeNextOn = currentTime + random(40, 500); //off for
   }
 }
 
-int findSymbolInTable(char symbol) 
+void seekTest() {
+  motorLR.step(X_AMOUNT, FORWARD, DOUBLE);
+  motorLR.release();
+  motorUD.step(Y_AMOUNT, FORWARD, DOUBLE);
+  motorUD.release();
+  delay(50);
+  motorLR.step(X_AMOUNT, BACKWARD, DOUBLE);
+  motorLR.release();
+  motorUD.step(Y_AMOUNT, BACKWARD, DOUBLE);
+  motorUD.release();
+  delay(50);
+}
+
+void serialCalbrate() {
+  if (Serial.available() > 0) {
+    int incomingByte = 0;
+    incomingByte = Serial.read();
+
+    Serial.print("I received: ");
+    Serial.println(incomingByte, DEC);
+  }
+}
+
+int findSymbolInTable(char symbol)
 {
   for (int tableIndex = 0; tableIndex <= CHAR_TABLE_LEGTH; tableIndex++) {
     if (symbol == char(charTable[tableIndex][2])) {
