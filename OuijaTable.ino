@@ -23,86 +23,86 @@ AF_Stepper motorLR(200, 1);
 AF_Stepper motorUD(200, 2);
 
 unsigned int charTable[CHAR_TABLE_LEGTH][3] = {
-  0, 0, 'a',
-  0, 0, 'b',
-  0, 0, 'c',
-  0, 0, 'd',
-  0, 0, 'e',
-  0, 0, 'f',
-  0, 0, 'g',
-  0, 0, 'h',
-  0, 0, 'i',
-  0, 0, 'j',
-  0, 0, 'k',
-  0, 0, 'l',
-  0, 0, 'm',
-  0, 0, 'n',
-  0, 0, 'o',
-  0, 0, 'p',
-  0, 0, 'q',
-  0, 0, 'r',
-  0, 0, 's',
-  0, 0, 't',
-  0, 0, 'u',
-  0, 0, 'v',
-  0, 0, 'w',
-  0, 0, 'x',
-  0, 0, 'y',
-  0, 0, 'z',
-  0, 0, '0',
-  0, 0, '1',
-  0, 0, '2',
-  0, 0, '3',
-  0, 0, '4',
-  0, 0, '5',
-  0, 0, '6',
-  0, 0, '8',
-  0, 0, '9',
-  0, 0, '+', //YES
-  0, 0, '-', //NO
-  0, 0, '!', //GOODBYE
-  0, 0, '.' //SPACE
+  -1, -1, 'a',
+  -1, -1, 'b',
+  -1, -1, 'c',
+  -1, -1, 'd',
+  -1, -1, 'e',
+  -1, -1, 'f',
+  -1, -1, 'g',
+  -1, -1, 'h',
+  -1, -1, 'i',
+  -1, -1, 'j',
+  -1, -1, 'k',
+  -1, -1, 'l',
+  -1, -1, 'm',
+  -1, -1, 'n',
+  -1, -1, 'o',
+  -1, -1, 'p',
+  -1, -1, 'q',
+  -1, -1, 'r',
+  -1, -1, 's',
+  -1, -1, 't',
+  -1, -1, 'u',
+  -1, -1, 'v',
+  -1, -1, 'w',
+  -1, -1, 'x',
+  -1, -1, 'y',
+  -1, -1, 'z',
+  -1, -1, '0',
+  -1, -1, '1',
+  -1, -1, '2',
+  -1, -1, '3',
+  -1, -1, '4',
+  -1, -1, '5',
+  -1, -1, '6',
+  -1, -1, '8',
+  -1, -1, '9',
+  -1, -1, '+', //YES
+  -1, -1, '-', //NO
+  -1, -1, '!', //GOODBYE
+  -1, -1, '.' //SPACE
 };
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Initalising...");
-  
+  Serial.println("[INFO] Initalising...");
+
   pinMode(LIGHT_PIN, OUTPUT);
   digitalWrite(LIGHT_PIN, HIGH);
 
   pinMode(LIMIT_LR, INPUT_PULLUP);
   pinMode(LIMIT_UD, INPUT_PULLUP);
-  
+
   motorLR.setSpeed(SPEED);
   motorUD.setSpeed(SPEED);
 
-  Serial.println("Resetting...");
+  Serial.println("[INFO] Resetting...");
   delay(100);
   reset();
   delay(100);
-  Serial.println("Welcome!");
+  Serial.println("[INFO] Welcome!");
 }
 
 void loop() {
   serialCalbrate();
 }
 
-void reset(){
+void reset() {
   //Move until we hit the limit switches
-  while(digitalRead(LIMIT_LR) != LOW){
+  while (digitalRead(LIMIT_LR) != LOW) {
     motorLR.step(1, FORWARD, DOUBLE);
   }
   motorLR.release();
 
-  while(digitalRead(LIMIT_UD) != LOW){
+  while (digitalRead(LIMIT_UD) != LOW) {
     motorUD.step(1, BACKWARD, DOUBLE);
   }
   motorUD.release();
 
   posX = MAX_X;
   posY = 0;
-  
+
 }
 
 void lightFlicker() {
@@ -142,21 +142,21 @@ void serialCalbrate() {
     else if (in == 'W') {
       move(posX, posY + 50);
     }
-    
+
     else if (in == 's') {
       move(posX, posY - 5);
     }
     else if (in == 'S') {
       move(posX, posY - 50);
     }
-    
+
     else if (in == 'a') {
       move(posX - 5, posY);
     }
     else if (in == 'A') {
       move(posX - 50, posY);
     }
-    
+
     else if (in == 'd') {
       move(posX + 5, posY);
     }
@@ -165,7 +165,7 @@ void serialCalbrate() {
     }
 
 
-    Serial.print("X: ");
+    Serial.print("[DEBUG] X: ");
     Serial.print(posX, DEC);
     Serial.print(" Y: ");
     Serial.print(posY, DEC);
@@ -180,7 +180,7 @@ int findSymbolInTable(char symbol)
       return tableIndex;
     }
   }
-  return -1;
+  return -2;
 }
 
 void moveToSymbol(char character)
@@ -188,22 +188,35 @@ void moveToSymbol(char character)
   int tableIndex = findSymbolInTable(character);
   int toX = charTable[tableIndex][0];
   int toY = charTable[tableIndex][1];
-}
 
-//void movePlus(int tx, int ty){
-//  move(tx + posX, ty + posY);
-//}
+  if(toX == -1 || toY == -1){
+    Serial.println(String("[ERROR] Character ") + String(character) + String(" does not have a valid XY coords! (X: ") + String(toX) + String(" Y: ") + String(toY));
+  }
+
+  if(toX == -2 || toY == -2){
+    Serial.println(String("[ERROR] Character ") + String(character) + String(" does not exist in the character list!"));
+  }
+  move(toX, toY);
+}
 
 void move(int tx, int ty) { //Async sometime
 
   int dirX, dirY;
   int moveX, moveY;
 
-  if(tx < MIN_X){tx = MIN_X;}
-  if(ty < MIN_Y){ty = MIN_Y;}
+  if (tx < MIN_X) {
+    tx = MIN_X;
+  }
+  if (ty < MIN_Y) {
+    ty = MIN_Y;
+  }
 
-  if(tx > MAX_X){tx = MAX_X;}
-  if(ty > MAX_Y){ty = MAX_Y;}
+  if (tx > MAX_X) {
+    tx = MAX_X;
+  }
+  if (ty > MAX_Y) {
+    ty = MAX_Y;
+  }
 
   if (tx < posX) {
     dirX = BACKWARD;
@@ -225,10 +238,10 @@ void move(int tx, int ty) { //Async sometime
 
   motorLR.step(moveX, dirX, DOUBLE);
   motorLR.release();
-  
+
   motorUD.step(moveY, dirY, DOUBLE);
   motorUD.release();
-  
+
   posX = tx;
   posY = ty;
 }
