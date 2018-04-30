@@ -7,10 +7,10 @@ const int LIMIT_LR = A0;
 const int LIMIT_UD = A1;
 
 const int SPEED = 100;
-const int MIN_X = 100;
+const int MIN_X = 245;
 const int MIN_Y = 0;
-const int MAX_X = 1500;
-const int MAX_Y = 550;
+const int MAX_X = 1600;
+const int MAX_Y = 700;
 
 //planchet's current position
 int posX = 0;
@@ -137,28 +137,28 @@ void serialCalbrate() {
     char in = (char)Serial.read();
 
     if (in == 'w') {
-      move(posX, posY + 20);
+      move(posX, posY + 5);
     }
     else if (in == 'W') {
       move(posX, posY + 50);
     }
     
     else if (in == 's') {
-      move(posX, posY - 20);
+      move(posX, posY - 5);
     }
     else if (in == 'S') {
       move(posX, posY - 50);
     }
     
     else if (in == 'a') {
-      move(posX - 20, posY);
+      move(posX - 5, posY);
     }
     else if (in == 'A') {
       move(posX - 50, posY);
     }
     
     else if (in == 'd') {
-      move(posX + 20, posY);
+      move(posX + 5, posY);
     }
     else if (in == 'D') {
       move(posX + 50, posY);
