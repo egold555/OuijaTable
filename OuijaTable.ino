@@ -83,11 +83,18 @@ void setup() {
   delay(100);
   Serial.println("[INFO] Welcome!");
   delay(100);
-  
+
+  line(MAX_X/2, MAX_Y/2);
+  release();
 }
 
 void loop() {
-  //serialCalbrate();
+  update();
+}
+
+//Called by motor and by loop!
+void update(){
+  lightFlicker();
 }
 
 void reset() {
@@ -185,8 +192,8 @@ void move(int tx, int ty) { //Async sometime
   }
 
   motorLR.step(moveX, dirX, DOUBLE);
-
   motorUD.step(moveY, dirY, DOUBLE);
+  update();
 
   posX = tx;
   posY = ty;
@@ -196,6 +203,27 @@ void release()
 {
   motorLR.release();
   motorUD.release();
+}
+
+// https://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
+void line(int x1, int y1) {
+
+  int x0 = posX;
+  int y0 = posY;
+  
+  int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
+  int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1; 
+  int err = (dx>dy ? dx : -dy)/2, e2;
+ 
+  while(true) {
+    move(x0,y0);
+    //Serial.print("M("); Serial.print(x0); Serial.print(","); Serial.print(y0); Serial.println(")");
+    if (x0==x1 && y0==y1) 
+      break;
+    e2 = err;
+    if (e2 >-dx) { err -= dy; x0 += sx; }
+    if (e2 < dy) { err += dx; y0 += sy; }
+  }
 }
 
 //===================== Test Code ====================
@@ -253,24 +281,6 @@ void serialCalbrate() {
     Serial.print(" Y: ");
     Serial.print(posY, DEC);
     Serial.println("");
-  }
-}
-
-// https://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
-void line(int x0, int y0, int x1, int y1) {
- 
-  int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
-  int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1; 
-  int err = (dx>dy ? dx : -dy)/2, e2;
- 
-  while(true) {
-    //move(x0,y0);
-    Serial.print("M("); Serial.print(x0); Serial.print(","); Serial.print(y0); Serial.println(")");
-    if (x0==x1 && y0==y1) 
-      break;
-    e2 = err;
-    if (e2 >-dx) { err -= dy; x0 += sx; }
-    if (e2 < dy) { err += dx; y0 += sy; }
   }
 }
 
