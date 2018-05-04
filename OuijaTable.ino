@@ -78,14 +78,10 @@ void setup() {
   motorUD.setSpeed(SPEED);
 
   Serial.println("[INFO] Resetting...");
-  delay(100);
   reset();
-  delay(100);
-  Serial.println("[INFO] Welcome!");
+  Serial.println("[INFO] Successfully Initalised!");
   delay(100);
 
-  line(MAX_X/2, MAX_Y/2);
-  release();
 }
 
 void loop() {
@@ -144,12 +140,15 @@ void moveToSymbol(char character)
   int toY = charTable[tableIndex][1];
 
   if (toX == -1 || toY == -1) {
-    //Serial.println(String("[ERROR] Character ") + String(character) + String(" does not have a valid XY coords! (X: ") + String(toX) + String(" Y: ") + String(toY));
+    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    return;
   }
 
   if (toX == -2 || toY == -2) {
-    //Serial.println(String("[ERROR] Character ") + String(character) + String(" does not exist in the character list!"));
+    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" does not exist in the character list!");
+    return;
   }
+  
   move(toX, toY);
 }
 
