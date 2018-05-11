@@ -7,10 +7,10 @@ const int LIMIT_LR = A0;
 const int LIMIT_UD = A1;
 
 const int SPEED = 100;
-const int MIN_X = 245;
+const int MIN_X = 400; //245
 const int MIN_Y = 0;
-const int MAX_X = 1600;
-const int MAX_Y = 700;
+const int MAX_X = 1800; //1600
+const int MAX_Y = 700; //700
 
 //planchet's current position
 int posX = 0;
@@ -36,7 +36,7 @@ int charTable[CHAR_TABLE_LEGTH][3] = {
   -1, -1, 'k',
   -1, -1, 'l',
   -1, -1, 'm',
-  -1, -1, 'n',
+  400, 0, 'n',
   -1, -1, 'o',
   -1, -1, 'p',
   -1, -1, 'q',
@@ -49,18 +49,18 @@ int charTable[CHAR_TABLE_LEGTH][3] = {
   -1, -1, 'x',
   -1, -1, 'y',
   -1, -1, 'z',
-  -1, -1, '0',
-  -1, -1, '1',
-  -1, -1, '2',
-  -1, -1, '3',
-  -1, -1, '4',
-  -1, -1, '5',
-  -1, -1, '6',
-  -1, -1, '8',
-  -1, -1, '9',
+//  -1, -1, '0',
+//  -1, -1, '1',
+//  -1, -1, '2',
+//  -1, -1, '3',
+//  -1, -1, '4',
+//  -1, -1, '5',
+//  -1, -1, '6',
+//  -1, -1, '8',
+//  -1, -1, '9',
   -1, -1, '+', //YES
   -1, -1, '-', //NO
-  -1, -1, '!', //GOODBYE
+//  -1, -1, '!', //GOODBYE
   -1, -1, '.' //SPACE
 };
 
@@ -90,7 +90,8 @@ void loop() {
 
 //Called by motor and by loop!
 void update(){
-  lightFlicker();
+  //lightFlicker();
+  serialCalbrate();
 }
 
 void reset() {
@@ -271,6 +272,9 @@ void serialCalbrate() {
     }
     else if (in == 'D') {
       move(posX + 50, posY);
+    }
+    else if(in == 'r'){
+      reset();
     }
 
     release();
