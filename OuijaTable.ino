@@ -25,43 +25,43 @@ AF_Stepper motorUD(200, 2);
 int charTable[CHAR_TABLE_LEGTH][3] = {
   -1, -1, 'a',
   -1, -1, 'b',
-  -1, -1, 'c',
-  -1, -1, 'd',
-  -1, -1, 'e',
-  -1, -1, 'f',
-  -1, -1, 'g',
-  -1, -1, 'h',
-  -1, -1, 'i',
-  -1, -1, 'j',
-  -1, -1, 'k',
+  580, 300, 'c',
+  560, 350, 'd',
+  1030, 400, 'e',
+  1180, 330, 'f',
+  1330, 330, 'g',
+  1530, 330, 'h',
+  1520, 300, 'i',
+  1570, 270, 'j',
+  1690, 320, 'k',
   -1, -1, 'l',
   -1, -1, 'm',
   400, 0, 'n',
-  -1, -1, 'o',
-  -1, -1, 'p',
-  -1, -1, 'q',
-  -1, -1, 'r',
-  -1, -1, 's',
-  -1, -1, 't',
-  -1, -1, 'u',
-  -1, -1, 'v',
-  -1, -1, 'w',
-  -1, -1, 'x',
+  500, 0, 'o',
+  510, 90, 'p',
+  610, 140, 'q',
+  760, 200, 'r',
+  860, 200, 's',
+  960, 200, 't',
+  900, 200, 'u',
+  920, 200, 'v',
+  920, 100, 'w',
+  1800, 50, 'x',
   -1, -1, 'y',
   -1, -1, 'z',
-//  -1, -1, '0',
-//  -1, -1, '1',
-//  -1, -1, '2',
-//  -1, -1, '3',
-//  -1, -1, '4',
-//  -1, -1, '5',
-//  -1, -1, '6',
-//  -1, -1, '8',
-//  -1, -1, '9',
-  -1, -1, '+', //YES
-  -1, -1, '-', //NO
-//  -1, -1, '!', //GOODBYE
-  -1, -1, '.' //SPACE
+  //  -1, -1, '0',
+  //  -1, -1, '1',
+  //  -1, -1, '2',
+  //  -1, -1, '3',
+  //  -1, -1, '4',
+  //  -1, -1, '5',
+  //  -1, -1, '6',
+  //  -1, -1, '8',
+  //  -1, -1, '9',
+  1050, 230, '+', //YES
+  1800, 0, '-', //NO
+  //  -1, -1, '!', //GOODBYE
+  1600, 0, '.' //SPACE
 };
 
 void setup() {
@@ -89,9 +89,10 @@ void loop() {
 }
 
 //Called by motor and by loop!
-void update(){
+void update() {
   //lightFlicker();
-  serialCalbrate();
+  //serialCalbrate();
+  letterTest();
 }
 
 void reset() {
@@ -101,10 +102,11 @@ void reset() {
   }
   motorLR.release();
 
-  while (digitalRead(LIMIT_UD) != LOW) {
-    motorUD.step(1, BACKWARD, DOUBLE);
-  }
-  motorUD.release();
+  //Until I fix swich
+  //  while (digitalRead(LIMIT_UD) != LOW) {
+  //    motorUD.step(1, BACKWARD, DOUBLE);
+  //  }
+  //  motorUD.release();
 
   posX = MAX_X;
   posY = 0;
@@ -149,8 +151,9 @@ void moveToSymbol(char character)
     Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" does not exist in the character list!");
     return;
   }
-  
-  move(toX, toY);
+  if (toX > 0 && toY > 0) {
+    move(toX, toY);
+  }
 }
 
 
@@ -193,10 +196,17 @@ void move(int tx, int ty) { //Async sometime
 
   motorLR.step(moveX, dirX, DOUBLE);
   motorUD.step(moveY, dirY, DOUBLE);
+  
   update();
 
   posX = tx;
   posY = ty;
+
+  Serial.print("[DEBUG] X: ");
+    Serial.print(posX, DEC);
+    Serial.print(" Y: ");
+    Serial.print(posY, DEC);
+    Serial.println("");
 }
 
 void release()
@@ -210,19 +220,25 @@ void line(int x1, int y1) {
 
   int x0 = posX;
   int y0 = posY;
-  
-  int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
-  int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1; 
-  int err = (dx>dy ? dx : -dy)/2, e2;
- 
-  while(true) {
-    move(x0,y0);
+
+  int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+  int dy = abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+  int err = (dx > dy ? dx : -dy) / 2, e2;
+
+  while (true) {
+    move(x0, y0);
     //Serial.print("M("); Serial.print(x0); Serial.print(","); Serial.print(y0); Serial.println(")");
-    if (x0==x1 && y0==y1) 
+    if (x0 == x1 && y0 == y1)
       break;
     e2 = err;
-    if (e2 >-dx) { err -= dy; x0 += sx; }
-    if (e2 < dy) { err += dx; y0 += sy; }
+    if (e2 > -dx) {
+      err -= dy;
+      x0 += sx;
+    }
+    if (e2 < dy) {
+      err += dx;
+      y0 += sy;
+    }
   }
 }
 
@@ -241,39 +257,50 @@ void seekTest() {
   delay(50);
 }
 
-const int MOVE_AMOUNT = 20;
+void letterTest() {
+  if (Serial.available() > 0) {
+    char in = (char)Serial.read();
+    if (in == '~') {
+      reset();
+    } else {
+      moveToSymbol(in);
+    }
+    release();
+  }
+}
+
 void serialCalbrate() {
   if (Serial.available() > 0) {
     char in = (char)Serial.read();
 
     if (in == 'w') {
-      move(posX, posY + 5);
+      move(posX, posY + 10);
     }
     else if (in == 'W') {
       move(posX, posY + 50);
     }
 
     else if (in == 's') {
-      move(posX, posY - 5);
+      move(posX, posY - 10);
     }
     else if (in == 'S') {
       move(posX, posY - 50);
     }
 
     else if (in == 'a') {
-      move(posX - 5, posY);
+      move(posX - 10, posY);
     }
     else if (in == 'A') {
       move(posX - 50, posY);
     }
 
     else if (in == 'd') {
-      move(posX + 5, posY);
+      move(posX + 10, posY);
     }
     else if (in == 'D') {
       move(posX + 50, posY);
     }
-    else if(in == 'r'){
+    else if (in == 'r') {
       reset();
     }
 
