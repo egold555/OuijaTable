@@ -80,19 +80,22 @@ void setup() {
   Serial.println("[INFO] Resetting...");
   reset();
   Serial.println("[INFO] Successfully Initalised!");
-  delay(100);
+  Serial.println("[INFO] Waiting 5 seconds for y calibration");
+  delay(5000);
 
 }
 
 void loop() {
-  update();
+  //update();
+  char arrayThing[30] = {'t','e','s','t','i','n', 'g', 0};
+  spell(arrayThing);
 }
 
 //Called by motor and by loop!
 void update() {
   lightFlicker();
   //serialCalbrate();
-  //letterTest();
+  letterTest();
 }
 
 void reset() {
@@ -133,6 +136,7 @@ int findSymbolInTable(char symbol)
       return tableIndex;
     }
   }
+  Serial.println("ERROR: -2"); //Does not get called wtf
   return -2;
 }
 
@@ -156,6 +160,12 @@ void moveToSymbol(char character)
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!");
     can = false;
   }
+
+  if(toX > MAX_X || toY > MAX_Y){
+    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Cant Happen case)");
+    can = false;
+  }
+  
   if (can) {
     Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
@@ -205,7 +215,7 @@ void move(int tx, int ty) { //Async sometime
   motorUD.step(moveY, dirY, DOUBLE);
 
   update();
-
+  release();
   posX = tx;
   posY = ty;
 
@@ -243,6 +253,22 @@ void line(int x1, int y1) {
       y0 += sy;
     }
   }
+}
+
+void spell(char* charArray) {
+  for (int i = 0; i <= 32; i++) {
+    if (charArray[i] != 0) {
+      Serial.print("Character: "); Serial.println(charArray[i]);
+      ouijaDelay();
+      moveToSymbol(charArray[i]);
+      ouijaDelay();
+    }
+    else break;
+  }
+}
+
+void ouijaDelay() {
+  delay(1000); //200
 }
 
 //===================== Test Code ====================
@@ -309,7 +335,7 @@ void serialCalbrate() {
 
     if (in == '=') { //w
       move(posX, posY + 30);
-    } 
+    }
     else if (in == ']') { //s
       move(posX, posY - 30);
     }
