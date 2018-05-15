@@ -25,28 +25,28 @@ AF_Stepper motorUD(200, 2);
 int charTable[CHAR_TABLE_LEGTH][3] = {
   -1, -1, 'a',
   -1, -1, 'b',
-  580, 300, 'c',
-  560, 350, 'd',
+  680, 350, 'c',
+  880, 400, 'd',
   1030, 400, 'e',
-  1180, 330, 'f',
-  1330, 330, 'g',
-  1530, 330, 'h',
-  1520, 300, 'i',
-  1570, 270, 'j',
-  1690, 320, 'k',
+  1180, 400, 'f',
+  1330, 400, 'g',
+  1480, 400, 'h',
+  1630, 400, 'i',
+  1780, 350, 'j',
+  1800, 250, 'k',
   -1, -1, 'l',
   -1, -1, 'm',
-  400, 0, 'n',
-  500, 0, 'o',
-  510, 90, 'p',
-  610, 140, 'q',
-  760, 200, 'r',
-  860, 200, 's',
-  960, 200, 't',
-  900, 200, 'u',
-  920, 200, 'v',
-  920, 100, 'w',
-  1800, 50, 'x',
+  -1, -1, 'n',
+  -1, -1, 'o',
+  680, 100, 'p',
+  830, 140, 'q',
+  960, 200, 'r',
+  1110, 200, 's',
+  1260, 200, 't',
+  1350, 180, 'u',
+  1500, 180, 'v',
+  1700, 120, 'w',
+  1800, 20, 'x',
   -1, -1, 'y',
   -1, -1, 'z',
   //  -1, -1, '0',
@@ -58,10 +58,10 @@ int charTable[CHAR_TABLE_LEGTH][3] = {
   //  -1, -1, '6',
   //  -1, -1, '8',
   //  -1, -1, '9',
-  1050, 230, '+', //YES
-  1800, 0, '-', //NO
+  750, 550, '+', //YES
+  1800, 550, '-', //NO
   //  -1, -1, '!', //GOODBYE
-  1600, 0, '.' //SPACE
+  1350, 550, '.' //SPACE
 };
 
 void setup() {
@@ -193,7 +193,8 @@ void move(int tx, int ty) { //Async sometime
     dirY = FORWARD;
     moveY = ty - posY;
   }
-
+  Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.println("");
+  Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.println("");
   motorLR.step(moveX, dirX, DOUBLE);
   motorUD.step(moveY, dirY, DOUBLE);
   
@@ -202,11 +203,7 @@ void move(int tx, int ty) { //Async sometime
   posX = tx;
   posY = ty;
 
-  Serial.print("[DEBUG] X: ");
-    Serial.print(posX, DEC);
-    Serial.print(" Y: ");
-    Serial.print(posY, DEC);
-    Serial.println("");
+  Serial.print("[DEBUG - UPOS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
 }
 
 void release()
@@ -274,28 +271,28 @@ void serialCalbrate() {
     char in = (char)Serial.read();
 
     if (in == 'w') {
-      move(posX, posY + 10);
+      move(posX, posY + 20);
     }
     else if (in == 'W') {
       move(posX, posY + 50);
     }
 
     else if (in == 's') {
-      move(posX, posY - 10);
+      move(posX, posY - 20);
     }
     else if (in == 'S') {
       move(posX, posY - 50);
     }
 
     else if (in == 'a') {
-      move(posX - 10, posY);
+      move(posX - 20, posY);
     }
     else if (in == 'A') {
       move(posX - 50, posY);
     }
 
     else if (in == 'd') {
-      move(posX + 10, posY);
+      move(posX + 20, posY);
     }
     else if (in == 'D') {
       move(posX + 50, posY);
@@ -306,11 +303,7 @@ void serialCalbrate() {
 
     release();
 
-    Serial.print("[DEBUG] X: ");
-    Serial.print(posX, DEC);
-    Serial.print(" Y: ");
-    Serial.print(posY, DEC);
-    Serial.println("");
+    Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
   }
 }
 
