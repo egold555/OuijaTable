@@ -138,20 +138,26 @@ int findSymbolInTable(char symbol)
 
 void moveToSymbol(char character)
 {
+  boolean can = true;
+  if(character <= 31){
+    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" is not a valid character!");
+    can = false;
+  }
   int tableIndex = findSymbolInTable(character);
   int toX = charTable[tableIndex][0];
   int toY = charTable[tableIndex][1];
 
   if (toX == -1 || toY == -1) {
-    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
-    return;
+    Serial.print("[ERROR] Character "); Serial.print(character); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    can = false;
   }
 
   if (toX == -2 || toY == -2) {
-    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" does not exist in the character list!");
-    return;
+    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!"); 
+    can = false;
   }
-  if (toX > 0 && toY > 0) {
+  if (can) {
+    Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
   }
 }
