@@ -24,29 +24,29 @@ AF_Stepper motorUD(200, 2);
 
 int charTable[CHAR_TABLE_LEGTH][3] = {
   -1, -1, 'a',
-  -1, -1, 'b',
-  680, 350, 'c',
-  880, 400, 'd',
-  1030, 400, 'e',
-  1180, 400, 'f',
-  1330, 400, 'g',
-  1480, 400, 'h',
-  1630, 400, 'i',
-  1780, 350, 'j',
-  1800, 250, 'k',
+  700, 300, 'b', //
+  800, 300, 'c', //
+  890, 350, 'd', //
+  1050, 400, 'e', //
+  1190, 400, 'f', //
+  1300, 400, 'g', //
+  1480, 400, 'h', //
+  1540, 350, 'i', //
+  1680, 300, 'j',
+  1800, 250, 'k',//
   -1, -1, 'l',
   -1, -1, 'm',
   -1, -1, 'n',
   -1, -1, 'o',
   680, 100, 'p',
   830, 140, 'q',
-  960, 200, 'r',
-  1110, 200, 's',
-  1260, 200, 't',
+  960, 190, 'r', //
+  1110, 200, 's', 
+  1260, 200, 't', 
   1350, 180, 'u',
-  1500, 180, 'v',
-  1700, 120, 'w',
-  1800, 20, 'x',
+  1500, 180, 'v', //
+  1700, 120, 'w', //
+  1800, 20, 'x', //
   -1, -1, 'y',
   -1, -1, 'z',
   //  -1, -1, '0',
@@ -139,7 +139,7 @@ int findSymbolInTable(char symbol)
 void moveToSymbol(char character)
 {
   boolean can = true;
-  if(character <= 31){
+  if (character <= 31) {
     Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" is not a valid character!");
     can = false;
   }
@@ -153,7 +153,7 @@ void moveToSymbol(char character)
   }
 
   if (toX == -2 || toY == -2) {
-    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!"); 
+    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!");
     can = false;
   }
   if (can) {
@@ -203,7 +203,7 @@ void move(int tx, int ty) { //Async sometime
   Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
   motorLR.step(moveX, dirX, DOUBLE);
   motorUD.step(moveY, dirY, DOUBLE);
-  
+
   update();
 
   posX = tx;
@@ -276,35 +276,51 @@ void serialCalbrate() {
   if (Serial.available() > 0) {
     char in = (char)Serial.read();
 
-    if (in == 'w') {
-      move(posX, posY + 20);
-    }
-    else if (in == 'W') {
-      move(posX, posY + 50);
-    }
+    //    if (in == 'w') {
+    //      move(posX, posY + 20);
+    //    }
+    //    else if (in == 'W') {
+    //      move(posX, posY + 50);
+    //    }
+    //
+    //    else if (in == 's') {
+    //      move(posX, posY - 20);
+    //    }
+    //    else if (in == 'S') {
+    //      move(posX, posY - 50);
+    //    }
+    //
+    //    else if (in == 'a') {
+    //      move(posX - 20, posY);
+    //    }
+    //    else if (in == 'A') {
+    //      move(posX - 50, posY);
+    //    }
+    //
+    //    else if (in == 'd') {
+    //      move(posX + 20, posY);
+    //    }
+    //    else if (in == 'D') {
+    //      move(posX + 50, posY);
+    //    }
+    //    else if (in == 'r') {
+    //      reset();
+    //    }
 
-    else if (in == 's') {
-      move(posX, posY - 20);
+    if (in == '=') { //w
+      move(posX, posY + 30);
+    } 
+    else if (in == ']') { //s
+      move(posX, posY - 30);
     }
-    else if (in == 'S') {
-      move(posX, posY - 50);
+    else if (in == '[') { //a
+      move(posX - 30, posY);
     }
-
-    else if (in == 'a') {
-      move(posX - 20, posY);
+    else if (in == '\\') { //d
+      move(posX + 30, posY);
     }
-    else if (in == 'A') {
-      move(posX - 50, posY);
-    }
-
-    else if (in == 'd') {
-      move(posX + 20, posY);
-    }
-    else if (in == 'D') {
-      move(posX + 50, posY);
-    }
-    else if (in == 'r') {
-      reset();
+    else if (in == '~') { //reset
+      move(1800, 0);
     }
 
     release();
