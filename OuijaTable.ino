@@ -193,8 +193,8 @@ void move(int tx, int ty) { //Async sometime
     dirY = FORWARD;
     moveY = ty - posY;
   }
-  Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.println("");
-  Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.println("");
+  Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.print(" TX: "); Serial.print(tx, DEC); Serial.println("");
+  Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
   motorLR.step(moveX, dirX, DOUBLE);
   motorUD.step(moveY, dirY, DOUBLE);
   
@@ -203,7 +203,7 @@ void move(int tx, int ty) { //Async sometime
   posX = tx;
   posY = ty;
 
-  Serial.print("[DEBUG - UPOS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
+  Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
 }
 
 void release()
