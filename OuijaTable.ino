@@ -85,17 +85,19 @@ void setup() {
 
 }
 
+//called everytime a message finishes
 void loop() {
-  //update();
-  char arrayThing[30] = {'t','e','s','t','i','n', 'g', 0};
+  update();
+  char *arrayThing = "testing";
   spell(arrayThing);
+  //serialCalbrate();
+  //letterTest();
 }
 
 //Called by motor and by loop!
 void update() {
   lightFlicker();
-  //serialCalbrate();
-  letterTest();
+
 }
 
 void reset() {
@@ -210,11 +212,15 @@ void move(int tx, int ty) { //Async sometime
   }
   Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.print(" TX: "); Serial.print(tx, DEC); Serial.println("");
   Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
-  motorLR.step(moveX, dirX, DOUBLE);
-  motorUD.step(moveY, dirY, DOUBLE);
+  if (moveX != 0) {
+    motorLR.step(moveX, dirX, DOUBLE);
+  }
+  if (moveY != 0) {
+    motorUD.step(moveY, dirY, DOUBLE);
+  }
 
   update();
-  release();
+  //release();  // remove this if you are using the line function.
   posX = tx;
   posY = ty;
 
@@ -266,8 +272,18 @@ void spell(char* charArray) {
   }
 }
 
+void delayBetter(int milliSeconds)
+{
+  long start = millis();
+  long end = start + milliSeconds;
+  while (millis() < end) {
+    delay(1);
+    update();
+  }
+}
+
 void ouijaDelay() {
-  delay(1000); //200
+  delayBetter(1000); //200
 }
 
 //===================== Test Code ====================
