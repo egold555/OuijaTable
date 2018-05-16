@@ -1,7 +1,5 @@
 #include "AFMotor.h"
 
-#define CHAR_TABLE_LEGTH 39
-
 const int LIGHT_PIN = 10;
 const int LIMIT_LR = A0;
 const int LIMIT_UD = A1;
@@ -22,7 +20,7 @@ long timeNextOff = 0;
 AF_Stepper motorLR(200, 1);
 AF_Stepper motorUD(200, 2);
 
-int charTable[CHAR_TABLE_LEGTH][3] = {
+int charTable[][3] = {
   //-1, -1, 'a',
   700, 300, 'b',
   800, 300, 'c',
@@ -63,6 +61,8 @@ int charTable[CHAR_TABLE_LEGTH][3] = {
   //  -1, -1, '!', //GOODBYE
   1350, 550, '.' //SPACE
 };
+
+#define CHAR_TABLE_LEGTH (sizeof(charTable)/sizeof(charTable[0]))
 
 void setup() {
   Serial.begin(9600);
@@ -136,8 +136,7 @@ int findSymbolInTable(char symbol)
       return tableIndex;
     }
   }
-  Serial.println("ERROR: -2"); //Does not get called wtf
-  return -2;
+  return -1;
 }
 
 void moveToSymbol(char character)
@@ -156,7 +155,7 @@ void moveToSymbol(char character)
     can = false;
   }
 
-  if (toX == -2 || toY == -2) {
+  if (tableIndex == -1 || tableIndex == -1) {
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!");
     can = false;
   }
