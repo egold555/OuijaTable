@@ -39,7 +39,7 @@ int charTable[][3] = {
   750, 80, 'p',
   910, 120, 'q',
   960, 190, 'r',
-  1110, 200, 's',
+  1110, 200, 's', //off right
   1260, 200, 't',
   1370, 180, 'u',
   1500, 180, 'v',
@@ -88,8 +88,31 @@ void setup() {
 //called everytime a message finishes
 void loop() {
   update();
-  char *arrayThing = "testing";
-  spell(arrayThing);
+  char *msg = "";
+  int mNum = random(0, 7);
+  Serial.print("MSG: "); Serial.println(mNum);
+  if(mNum == 0){
+    msg = "behind.you";
+  }
+  else if(mNum == 1){
+    msg = "hello";
+  }
+  else if(mNum == 2){
+    msg = "+";
+  }
+  else if(mNum == 3){
+    msg = "-";
+  }
+  else if(mNum == 4){
+    msg = "i.see.you";
+  }
+  else if(mNum == 5){
+    msg = "are.you.scared";
+  }
+  else if(mNum == 6){
+    msg = "i.am.here.too";
+  }
+  spell(msg);
   //serialCalbrate();
   //letterTest();
 }
@@ -97,11 +120,10 @@ void loop() {
 //Called by motor and by loop!
 void update() {
   lightFlicker();
-  //Serial.println("Update");
 }
 
 //Gets called from modified stepper lib
-void AF_Stepper::doupdate(){ 
+void AF_Stepper::doupdate() {
   update();
 }
 
@@ -126,13 +148,17 @@ void reset() {
 void lightFlicker() {
   long currentTime = millis();
   bool on = !digitalRead(LIGHT_PIN);
+  int theAmount = 10000;
+  if (posX > 1480) {
+    theAmount = 400;
+  }
   if (!on && currentTime > timeNextOn) {
     digitalWrite(LIGHT_PIN, LOW);
-    timeNextOff = currentTime + random(100, 10000); //on for
+    timeNextOff = currentTime + random(100, theAmount); //on for 10000
   }
   else if (on && currentTime > timeNextOff) {
     digitalWrite(LIGHT_PIN, HIGH);
-    timeNextOn = currentTime + random(40, 500); //off for
+    timeNextOn = currentTime + random(40, 300); //off for
   }
 }
 
@@ -167,11 +193,11 @@ void moveToSymbol(char character)
     can = false;
   }
 
-  if(toX > MAX_X || toY > MAX_Y){
+  if (toX > MAX_X || toY > MAX_Y) {
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Table Overflow)");
     can = false;
   }
-  
+
   if (can) {
     Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
@@ -239,6 +265,34 @@ void release()
   motorUD.release();
 }
 
+void spell(char* charArray) {
+  for (int i = 0; i <= 32; i++) {
+    if (charArray[i] != 0) {
+      Serial.print("Character: "); Serial.println(charArray[i]);
+      ouijaDelay();
+      moveToSymbol(charArray[i]);
+      ouijaDelay();
+    }
+    else break;
+  }
+}
+
+void delayBetter(int milliSeconds)
+{
+  long start = millis();
+  long end = start + milliSeconds;
+  while (millis() < end) {
+    delay(1);
+    update();
+  }
+}
+
+void ouijaDelay() {
+  delayBetter(200); //200
+}
+
+//===================== Test Code ====================
+
 // https://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
 void line(int x1, int y1) {
 
@@ -267,34 +321,6 @@ void line(int x1, int y1) {
     }
   }
 }
-
-void spell(char* charArray) {
-  for (int i = 0; i <= 32; i++) {
-    if (charArray[i] != 0) {
-      Serial.print("Character: "); Serial.println(charArray[i]);
-      ouijaDelay();
-      moveToSymbol(charArray[i]);
-      ouijaDelay();
-    }
-    else break;
-  }
-}
-
-void delayBetter(int milliSeconds)
-{
-  long start = millis();
-  long end = start + milliSeconds;
-  while (millis() < end) {
-    delay(1);
-    update();
-  }
-}
-
-void ouijaDelay() {
-  delayBetter(1000); //200
-}
-
-//===================== Test Code ====================
 
 void seekTest() {
   motorLR.step(MAX_X, FORWARD, DOUBLE);
