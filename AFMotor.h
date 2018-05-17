@@ -164,6 +164,7 @@ class AF_DCMotor
 class AF_Stepper {
  public:
   AF_Stepper(uint16_t, uint8_t);
+  void doupdate(); //Added so I can override it
   void step(uint16_t steps, uint8_t dir,  uint8_t style = SINGLE);
   void setSpeed(uint16_t);
   uint8_t onestep(uint8_t dir, uint8_t style);

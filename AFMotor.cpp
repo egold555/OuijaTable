@@ -514,7 +514,14 @@ void AF_Stepper::step(uint16_t steps, uint8_t dir,  uint8_t style) {
   }
 }
 
+//Added so I can override it
+__attribute__ ((weak))
+void AF_Stepper::doupdate(){
+  
+}
+
 uint8_t AF_Stepper::onestep(uint8_t dir, uint8_t style) {
+  doupdate();
   uint8_t a, b, c, d;
   uint8_t ocrb, ocra;
 

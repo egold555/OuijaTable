@@ -97,7 +97,12 @@ void loop() {
 //Called by motor and by loop!
 void update() {
   lightFlicker();
+  //Serial.println("Update");
+}
 
+//Gets called from modified stepper lib
+void AF_Stepper::doupdate(){ 
+  update();
 }
 
 void reset() {
@@ -163,13 +168,14 @@ void moveToSymbol(char character)
   }
 
   if(toX > MAX_X || toY > MAX_Y){
-    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Cant Happen case)");
+    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Table Overflow)");
     can = false;
   }
   
   if (can) {
     Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
+    //line(toX, toY);
   }
 }
 
@@ -238,13 +244,15 @@ void line(int x1, int y1) {
 
   int x0 = posX;
   int y0 = posY;
+  const int moveAmount = 10;
 
-  int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-  int dy = abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+  int dx = abs(x1 - x0), sx = x0 < x1 ? moveAmount : -moveAmount;
+  int dy = abs(y1 - y0), sy = y0 < y1 ? moveAmount : -moveAmount;
   int err = (dx > dy ? dx : -dy) / 2, e2;
 
   while (true) {
     move(x0, y0);
+    update();
     //Serial.print("M("); Serial.print(x0); Serial.print(","); Serial.print(y0); Serial.println(")");
     if (x0 == x1 && y0 == y1)
       break;
