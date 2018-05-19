@@ -1,14 +1,21 @@
+/*
+  TODO:
+
+*/
+
 #include "AFMotor.h"
 
 const int LIGHT_PIN = 10;
-const int LIMIT_LR = A0;
-const int LIMIT_UD = A1;
+const int LIMIT_LR = A4;
+const int LIMIT_UD = A5;
 
 const int SPEED = 100;
 const int MIN_X = 400; //245
 const int MIN_Y = 0;
 const int MAX_X = 1800; //1600
 const int MAX_Y = 700; //700
+const int LIGHT_MAX_DELAY = 32000;
+const int LIGHT_MIN_DELAY = 0;
 
 //planchet's current position
 int posX = 0;
@@ -80,7 +87,7 @@ void setup() {
   Serial.println("[INFO] Resetting...");
   reset();
   Serial.println("[INFO] Successfully Initalised!");
-  Serial.println("[INFO] Waiting 5 seconds for y calibration");
+  Serial.println("[INFO] Waiting 5 seconds");
   delay(5000);
 
 }
@@ -88,33 +95,33 @@ void setup() {
 //called everytime a message finishes
 void loop() {
   update();
-  char *msg = "";
-  int mNum = random(0, 7);
-  Serial.print("MSG: "); Serial.println(mNum);
-  if(mNum == 0){
-    msg = "behind.you";
-  }
-  else if(mNum == 1){
-    msg = "hello";
-  }
-  else if(mNum == 2){
-    msg = "+";
-  }
-  else if(mNum == 3){
-    msg = "-";
-  }
-  else if(mNum == 4){
-    msg = "i.see.you";
-  }
-  else if(mNum == 5){
-    msg = "are.you.scared";
-  }
-  else if(mNum == 6){
-    msg = "i.am.here.too";
-  }
-  spell(msg);
+  //char *msg = "abcdefghijklmnopqrstuvwxyz";
+  //  int mNum = random(0, 7);
+  //  Serial.print("MSG: "); Serial.println(mNum);
+  //  if(mNum == 0){
+  //    msg = "behind.you";
+  //  }
+  //  else if(mNum == 1){
+  //    msg = "hello";
+  //  }
+  //  else if(mNum == 2){
+  //    msg = "+";
+  //  }
+  //  else if(mNum == 3){
+  //    msg = "-";
+  //  }
+  //  else if(mNum == 4){
+  //    msg = "i.see.you";
+  //  }
+  //  else if(mNum == 5){
+  //    msg = "are.you.scared";
+  //  }
+  //  else if(mNum == 6){
+  //    msg = "i.am.here.too";
+  //  }
+ // spell(msg);
   //serialCalbrate();
-  //letterTest();
+  letterTest();
 }
 
 //Called by motor and by loop!
@@ -128,17 +135,17 @@ void AF_Stepper::doupdate() {
 }
 
 void reset() {
-  //Move until we hit the limit switches
+  // Move until we hit the limit switches
   while (digitalRead(LIMIT_LR) != LOW) {
     motorLR.step(1, FORWARD, DOUBLE);
   }
   motorLR.release();
 
   //Until I fix swich
-  //  while (digitalRead(LIMIT_UD) != LOW) {
-  //    motorUD.step(1, BACKWARD, DOUBLE);
-  //  }
-  //  motorUD.release();
+  while (digitalRead(LIMIT_UD) != LOW) {
+    motorUD.step(1, BACKWARD, DOUBLE);
+  }
+  motorUD.release();
 
   posX = MAX_X;
   posY = 0;
@@ -148,13 +155,15 @@ void reset() {
 void lightFlicker() {
   long currentTime = millis();
   bool on = !digitalRead(LIGHT_PIN);
-  int theAmount = 10000;
-  if (posX > 1480) {
-    theAmount = 400;
-  }
+  //  int theAmount = 10000;
+  //  if (posX > 1480) {
+  //    theAmount = 400;
+  //  }
+
   if (!on && currentTime > timeNextOn) {
     digitalWrite(LIGHT_PIN, LOW);
-    timeNextOff = currentTime + random(100, theAmount); //on for 10000
+    int theDelay = -((LIGHT_MAX_DELAY - LIGHT_MIN_DELAY) / MAX_X) * posX + LIGHT_MAX_DELAY;
+    timeNextOff = currentTime + random(100, theDelay);
   }
   else if (on && currentTime > timeNextOff) {
     digitalWrite(LIGHT_PIN, HIGH);
@@ -252,7 +261,7 @@ void move(int tx, int ty) { //Async sometime
   }
 
   update();
-  //release();  // remove this if you are using the line function.
+  release();  // remove this if you are using the line function.
   posX = tx;
   posY = ty;
 
