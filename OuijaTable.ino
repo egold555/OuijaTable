@@ -89,13 +89,13 @@ void setup() {
   Serial.println("[INFO] Successfully Initalised!");
   Serial.println("[INFO] Waiting 5 seconds");
   delay(5000);
-  spell("g");
+  //spell("g");
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  char *msg = "b";
+  char *msg = "testing";
   //  int mNum = random(0, 7);
   //  Serial.print("MSG: "); Serial.println(mNum);
   //  if(mNum == 0){
@@ -119,14 +119,14 @@ void loop() {
   //  else if(mNum == 6){
   //    msg = "i.am.here.too";
   //  }
-  //spell(msg);
+  spell(msg);
   //serialCalbrate();
-  //etterTest();
+  //letterTest();
 }
 
 //Called by motor and by loop!
 void update() {
-  //lightFlicker();
+  lightFlicker();
 }
 
 //Gets called from modified stepper lib
@@ -152,22 +152,63 @@ void reset() {
 
 }
 
-void lightFlicker() {
-  long currentTime = millis();
-  bool on = !digitalRead(LIGHT_PIN);
-  //  int theAmount = 10000;
-  //  if (posX > 1480) {
-  //    theAmount = 400;
-  //  }
+// Number of milliseconds between updates of the LAMP
+const int INTERVAL = 70;
 
-  if (!on && currentTime > timeNextOn) {
-    digitalWrite(LIGHT_PIN, LOW);
-    int theDelay = -((LIGHT_MAX_DELAY - LIGHT_MIN_DELAY) / MAX_X) * posX + LIGHT_MAX_DELAY;
-    timeNextOff = currentTime + random(100, theDelay);
+// probability (0-1000) of turning the light ON when the planchette
+// is away from the light. Determines how long the long is OFF: high
+// numbers mean light is OFF a short time, low numbers a long time.
+const int PON_FAR = 1000;
+
+// probability (0-1000) of turning the light OFF when the planchette
+// is away from the light. Determines how long the long is ON: high
+// numbers mean light is ON a short time, low numbers a long time.
+const int POFF_FAR = 0;
+
+// probability (0-1000) of turning the light ON when the planchette
+// is near the light. Determines how long the long is OFF: high
+// numbers mean light is OFF a short time, low numbers a long time.
+const int PON_NEAR = 1000;
+
+// probability (0-1000) of turning the light OFF when the planchette
+// is near the light. Determines how long the long is ON: high
+// numbers mean light is ON a short time, low numbers a long time.
+const int POFF_NEAR = 500;
+
+// Last time that the light was updated.
+long last_millis = 0;
+
+void lightFlicker()
+{
+  // Only process the light every INTERVAL milliseconds
+  long current_millis = millis();
+
+  if(posX < 1300){
+    return;
   }
-  else if (on && currentTime > timeNextOff) {
-    digitalWrite(LIGHT_PIN, HIGH);
-    timeNextOn = currentTime + random(40, 300); //off for
+  
+  if (current_millis - INTERVAL < last_millis) {
+    return;
+  }
+
+  last_millis = current_millis;
+
+  // Map the x position to a ON probability, ranging from PON_FAR to PON_NEAR
+  int pon = map(posX, MIN_X, MAX_X, PON_FAR, PON_NEAR);
+
+  // Map the x position to an OFF probability, ranging from POFF_FAR to POFF_NEAR
+  int poff = map(posX, MIN_X, MAX_X, POFF_FAR, POFF_NEAR);
+
+  // Use the probabilities to turn the light on or off.
+  if (digitalRead(LIGHT_PIN)) {
+    if (random(0, 1000) < pon) {
+      digitalWrite(LIGHT_PIN, LOW); //on
+    }
+  }
+  else {
+    if (random(0, 1000) < poff) {
+      digitalWrite(LIGHT_PIN, HIGH); //off
+    }
   }
 }
 
@@ -360,36 +401,36 @@ void serialCalbrate() {
   if (Serial.available() > 0) {
     char in = (char)Serial.read();
 
-        if (in == 'w') {
-          move(posX, posY + 20);
-        }
-        else if (in == 'W') {
-          move(posX, posY + 50);
-        }
-    
-        else if (in == 's') {
-          move(posX, posY - 20);
-        }
-        else if (in == 'S') {
-          move(posX, posY - 50);
-        }
-    
-        else if (in == 'a') {
-          move(posX - 20, posY);
-        }
-        else if (in == 'A') {
-          move(posX - 50, posY);
-        }
-    
-        else if (in == 'd') {
-          move(posX + 20, posY);
-        }
-        else if (in == 'D') {
-          move(posX + 50, posY);
-        }
-        else if (in == 'r') {
-          reset();
-        }
+    if (in == 'w') {
+      move(posX, posY + 20);
+    }
+    else if (in == 'W') {
+      move(posX, posY + 50);
+    }
+
+    else if (in == 's') {
+      move(posX, posY - 20);
+    }
+    else if (in == 'S') {
+      move(posX, posY - 50);
+    }
+
+    else if (in == 'a') {
+      move(posX - 20, posY);
+    }
+    else if (in == 'A') {
+      move(posX - 50, posY);
+    }
+
+    else if (in == 'd') {
+      move(posX + 20, posY);
+    }
+    else if (in == 'D') {
+      move(posX + 50, posY);
+    }
+    else if (in == 'r') {
+      reset();
+    }
 
     release();
 
