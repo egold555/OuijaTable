@@ -76,7 +76,7 @@ void setup() {
   Serial.println("[INFO] Initalising...");
 
   pinMode(LIGHT_PIN, OUTPUT);
-  digitalWrite(LIGHT_PIN, HIGH);
+  digitalWrite(LIGHT_PIN, LOW);
 
   pinMode(LIMIT_LR, INPUT_PULLUP);
   pinMode(LIMIT_UD, INPUT_PULLUP);
@@ -89,12 +89,13 @@ void setup() {
   Serial.println("[INFO] Successfully Initalised!");
   Serial.println("[INFO] Waiting 5 seconds");
   delay(5000);
+  spell("g");
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  char *msg = "abcdefghijklmnopqrstuvwxyz";
+  char *msg = "b";
   //  int mNum = random(0, 7);
   //  Serial.print("MSG: "); Serial.println(mNum);
   //  if(mNum == 0){
@@ -118,14 +119,14 @@ void loop() {
   //  else if(mNum == 6){
   //    msg = "i.am.here.too";
   //  }
-  spell(msg);
-  serialCalbrate();
-  letterTest();
+  //spell(msg);
+  //serialCalbrate();
+  //etterTest();
 }
 
 //Called by motor and by loop!
 void update() {
-  lightFlicker();
+  //lightFlicker();
 }
 
 //Gets called from modified stepper lib
