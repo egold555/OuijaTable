@@ -155,25 +155,10 @@ void reset() {
 // Number of milliseconds between updates of the LAMP
 const int INTERVAL = 70;
 
-// probability (0-1000) of turning the light ON when the planchette
-// is away from the light. Determines how long the long is OFF: high
-// numbers mean light is OFF a short time, low numbers a long time.
 const int PON_FAR = 1000;
-
-// probability (0-1000) of turning the light OFF when the planchette
-// is away from the light. Determines how long the long is ON: high
-// numbers mean light is ON a short time, low numbers a long time.
 const int POFF_FAR = 0;
-
-// probability (0-1000) of turning the light ON when the planchette
-// is near the light. Determines how long the long is OFF: high
-// numbers mean light is OFF a short time, low numbers a long time.
 const int PON_NEAR = 1000;
-
-// probability (0-1000) of turning the light OFF when the planchette
-// is near the light. Determines how long the long is ON: high
-// numbers mean light is ON a short time, low numbers a long time.
-const int POFF_NEAR = 500;
+const int POFF_NEAR = 200; //Light flicker amount higher = more
 
 // Last time that the light was updated.
 long last_millis = 0;
