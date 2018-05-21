@@ -89,13 +89,12 @@ void setup() {
   Serial.println("[INFO] Successfully Initalised!");
   Serial.println("[INFO] Waiting 5 seconds");
   delay(5000);
-
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  //char *msg = "abcdefghijklmnopqrstuvwxyz";
+  char *msg = "abcdefghijklmnopqrstuvwxyz";
   //  int mNum = random(0, 7);
   //  Serial.print("MSG: "); Serial.println(mNum);
   //  if(mNum == 0){
@@ -119,8 +118,8 @@ void loop() {
   //  else if(mNum == 6){
   //    msg = "i.am.here.too";
   //  }
- // spell(msg);
-  //serialCalbrate();
+  spell(msg);
+  serialCalbrate();
   letterTest();
 }
 
@@ -173,7 +172,7 @@ void lightFlicker() {
 
 int findSymbolInTable(char symbol)
 {
-  for (int tableIndex = 0; tableIndex <= CHAR_TABLE_LEGTH; tableIndex++) {
+  for (int tableIndex = 0; tableIndex < CHAR_TABLE_LEGTH; tableIndex++) {
     if (symbol == char(charTable[tableIndex][2])) {
       return tableIndex;
     }
@@ -251,8 +250,8 @@ void move(int tx, int ty) { //Async sometime
     dirY = FORWARD;
     moveY = ty - posY;
   }
-  Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.print(" TX: "); Serial.print(tx, DEC); Serial.println("");
-  Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
+  //Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.print(" TX: "); Serial.print(tx, DEC); Serial.println("");
+  //Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
   if (moveX != 0) {
     motorLR.step(moveX, dirX, DOUBLE);
   }
@@ -360,56 +359,40 @@ void serialCalbrate() {
   if (Serial.available() > 0) {
     char in = (char)Serial.read();
 
-    //    if (in == 'w') {
-    //      move(posX, posY + 20);
-    //    }
-    //    else if (in == 'W') {
-    //      move(posX, posY + 50);
-    //    }
-    //
-    //    else if (in == 's') {
-    //      move(posX, posY - 20);
-    //    }
-    //    else if (in == 'S') {
-    //      move(posX, posY - 50);
-    //    }
-    //
-    //    else if (in == 'a') {
-    //      move(posX - 20, posY);
-    //    }
-    //    else if (in == 'A') {
-    //      move(posX - 50, posY);
-    //    }
-    //
-    //    else if (in == 'd') {
-    //      move(posX + 20, posY);
-    //    }
-    //    else if (in == 'D') {
-    //      move(posX + 50, posY);
-    //    }
-    //    else if (in == 'r') {
-    //      reset();
-    //    }
-
-    if (in == '=') { //w
-      move(posX, posY + 30);
-    }
-    else if (in == ']') { //s
-      move(posX, posY - 30);
-    }
-    else if (in == '[') { //a
-      move(posX - 30, posY);
-    }
-    else if (in == '\\') { //d
-      move(posX + 30, posY);
-    }
-    else if (in == '~') { //reset
-      move(1800, 0);
-    }
+        if (in == 'w') {
+          move(posX, posY + 20);
+        }
+        else if (in == 'W') {
+          move(posX, posY + 50);
+        }
+    
+        else if (in == 's') {
+          move(posX, posY - 20);
+        }
+        else if (in == 'S') {
+          move(posX, posY - 50);
+        }
+    
+        else if (in == 'a') {
+          move(posX - 20, posY);
+        }
+        else if (in == 'A') {
+          move(posX - 50, posY);
+        }
+    
+        else if (in == 'd') {
+          move(posX + 20, posY);
+        }
+        else if (in == 'D') {
+          move(posX + 50, posY);
+        }
+        else if (in == 'r') {
+          reset();
+        }
 
     release();
 
-    Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
+    //Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
   }
 }
 
