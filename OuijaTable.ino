@@ -28,30 +28,30 @@ AF_Stepper motorLR(200, 1);
 AF_Stepper motorUD(200, 2);
 
 int charTable[][3] = {
-  //-1, -1, 'a',
+  590, 240, 'a',
   700, 300, 'b',
-  800, 300, 'c',
-  890, 350, 'd',
-  1050, 400, 'e',
+  840, 340, 'c',
+  950, 370, 'd',
+  1070, 400, 'e',
   1190, 400, 'f',
   1300, 400, 'g',
-  1480, 400, 'h',
-  1540, 350, 'i',
-  1620, 300, 'j',
-  1800, 250, 'k',
+  1450, 400, 'h',
+  1540, 370, 'i',
+  1640, 350, 'j',
+  1770, 340, 'k',
   //-1, -1, 'l',
   //-1, -1, 'm',
   //-1, -1, 'n',
-  //-1, -1, 'o',
-  750, 80, 'p',
-  910, 120, 'q',
-  960, 190, 'r',
-  1110, 200, 's', //off right
-  1260, 200, 't',
-  1370, 180, 'u',
-  1500, 180, 'v',
-  1700, 120, 'w',
-  1800, 20, 'x',
+  670, 60, 'o',
+  790, 120, 'p',
+  920, 150, 'q',
+  1050, 190, 'r',
+  1160, 220, 's', 
+  1290, 240, 't',
+  1400, 220, 'u',
+  1530, 200, 'v',
+  1650, 140, 'w',
+  1800, 110, 'x',
   //-1, -1, 'y',
   //-1, -1, 'z',
   //  -1, -1, '0',
@@ -63,7 +63,7 @@ int charTable[][3] = {
   //  -1, -1, '6',
   //  -1, -1, '8',
   //  -1, -1, '9',
-  750, 550, '+', //YES
+  800, 550, '+', //YES
   1800, 550, '-', //NO
   //  -1, -1, '!', //GOODBYE
   1350, 550, '.' //SPACE
@@ -88,14 +88,14 @@ void setup() {
   reset();
   Serial.println("[INFO] Successfully Initalised!");
   Serial.println("[INFO] Waiting 5 seconds");
-  delay(5000);
-  //spell("g");
+  delay(500);
+  spell("+");
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  char *msg = "testing";
+  //char *msg = "testing";
   //  int mNum = random(0, 7);
   //  Serial.print("MSG: "); Serial.println(mNum);
   //  if(mNum == 0){
@@ -119,7 +119,7 @@ void loop() {
   //  else if(mNum == 6){
   //    msg = "i.am.here.too";
   //  }
-  spell(msg);
+  //spell(msg);
   //serialCalbrate();
   //letterTest();
 }
