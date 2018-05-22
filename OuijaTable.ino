@@ -46,7 +46,7 @@ int charTable[][3] = {
   790, 120, 'p',
   920, 150, 'q',
   1050, 190, 'r',
-  1160, 220, 's', 
+  1160, 220, 's',
   1290, 240, 't',
   1400, 220, 'u',
   1530, 200, 'v',
@@ -89,37 +89,38 @@ void setup() {
   Serial.println("[INFO] Successfully Initalised!");
   Serial.println("[INFO] Waiting 5 seconds");
   delay(500);
-  spell("+");
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  //char *msg = "testing";
-  //  int mNum = random(0, 7);
-  //  Serial.print("MSG: "); Serial.println(mNum);
-  //  if(mNum == 0){
-  //    msg = "behind.you";
-  //  }
-  //  else if(mNum == 1){
-  //    msg = "hello";
-  //  }
-  //  else if(mNum == 2){
-  //    msg = "+";
-  //  }
-  //  else if(mNum == 3){
-  //    msg = "-";
-  //  }
-  //  else if(mNum == 4){
-  //    msg = "i.see.you";
-  //  }
-  //  else if(mNum == 5){
-  //    msg = "are.you.scared";
-  //  }
-  //  else if(mNum == 6){
-  //    msg = "i.am.here.too";
-  //  }
-  //spell(msg);
+  char *msg = "eric.golde";
+  //    int mNum = random(0, 7);
+  //    if(mNum == 0){
+  //      msg = "behind.you";
+  //    }
+  //    else if(mNum == 1){
+  //      msg = "hello.human";
+  //    }
+  //    else if(mNum == 2){
+  //      msg = "+";
+  //    }
+  //    else if(mNum == 3){
+  //      msg = "-";
+  //    }
+  //    else if(mNum == 4){
+  //      msg = "i.see.you";
+  //    }
+  //    else if(mNum == 5){
+  //      msg = "are.you.scared";
+  //    }
+  //    else if(mNum == 6){
+  //      msg = "i.am.here.too";
+  //    }
+  spell(msg);
+  ouijaDelay();
+  spell(".");
+  delayBetter(2000);
   //serialCalbrate();
   //letterTest();
 }
@@ -168,10 +169,10 @@ void lightFlicker()
   // Only process the light every INTERVAL milliseconds
   long current_millis = millis();
 
-  if(posX < 1300){
+  if (posX < 1300) {
     return;
   }
-  
+
   if (current_millis - INTERVAL < last_millis) {
     return;
   }
@@ -287,11 +288,11 @@ void move(int tx, int ty) { //Async sometime
   }
 
   update();
-  release();  // remove this if you are using the line function.
+  //release();  // remove this if you are using the line function.
   posX = tx;
   posY = ty;
 
-  Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
+  //Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
 }
 
 void release()
@@ -301,6 +302,7 @@ void release()
 }
 
 void spell(char* charArray) {
+  Serial.print("Printing Word: "); Serial.println(charArray);
   for (int i = 0; i <= 32; i++) {
     if (charArray[i] != 0) {
       Serial.print("Character: "); Serial.println(charArray[i]);
