@@ -1,8 +1,3 @@
-/*
-  TODO:
-
-*/
-
 #include "AFMotor.h"
 
 const int LIGHT_PIN = 10;
@@ -10,12 +5,14 @@ const int LIMIT_LR = A4;
 const int LIMIT_UD = A5;
 
 const int SPEED = 100;
-const int MIN_X = 400; //245
+const int MIN_X = 400;
 const int MIN_Y = 0;
-const int MAX_X = 1800; //1600
-const int MAX_Y = 700; //700
-const int LIGHT_MAX_DELAY = 32000;
-const int LIGHT_MIN_DELAY = 0;
+const int MAX_X = 1800;
+const int MAX_Y = 700;
+
+
+const int LIGHT_ON = 4000;
+const int LIGHT_OFF = 100;
 
 //planchet's current position
 int posX = 0;
@@ -113,8 +110,6 @@ void loop() {
   ouijaDelay();
   spell(".");
   delayBetter(2000);
-  //serialCalbrate();
-  //letterTest();
 }
 
 //Called by motor and by loop!
@@ -134,7 +129,6 @@ void reset() {
   }
   motorLR.release();
 
-  //Until I fix swich
   while (digitalRead(LIMIT_UD) != LOW) {
     motorUD.step(1, BACKWARD, DOUBLE);
   }
@@ -145,61 +139,11 @@ void reset() {
 
 }
 
-//// Number of milliseconds between updates of the LAMP
-//const int INTERVAL = 70;
-//
-//const int PON_FAR = 1000;
-//const int POFF_FAR = 0;
-//const int PON_NEAR = 1000;
-//const int POFF_NEAR = 200; //Light flicker amount higher = more
-//
-//// Last time that the light was updated.
-//long last_millis = 0;
-//
-//void lightFlicker2()
-//{
-//  // Only process the light every INTERVAL milliseconds
-//  long current_millis = millis();
-//
-//  if (posX < 1300) {
-//    digitalWrite(LIGHT_PIN, LOW); //on
-//    return;
-//  }
-//
-//  if (current_millis - INTERVAL < last_millis) {
-//    return;
-//  }
-//
-//  last_millis = current_millis;
-//
-//  // Map the x position to a ON probability, ranging from PON_FAR to PON_NEAR
-//  int pon = map(posX, MIN_X, MAX_X, PON_FAR, PON_NEAR);
-//
-//  // Map the x position to an OFF probability, ranging from POFF_FAR to POFF_NEAR
-//  int poff = map(posX, MIN_X, MAX_X, POFF_FAR, POFF_NEAR);
-//
-//  // Use the probabilities to turn the light on or off.
-//  if (digitalRead(LIGHT_PIN)) {
-//    if (random(0, 1000) < pon) {
-//      digitalWrite(LIGHT_PIN, LOW); //on
-//    }
-//  }
-//  else {
-//    if (random(0, 1000) < poff) {
-//      digitalWrite(LIGHT_PIN, HIGH); //off
-//    }
-//  }
-//}
-
 void lightFlicker(){
   bool lightIsOn = !digitalRead(LIGHT_PIN);
-  int randomChance = 4000;
+  int randomChance = LIGHT_ON;
   if(!lightIsOn){
-    randomChance = 100;
-//    if(random(0, 1000) == 0){
-//      randomChance = 10000;
-//    }
-    
+    randomChance = LIGHT_OFF;
   }
 
   if(random(0, randomChance) == 0){
@@ -228,23 +172,23 @@ void moveToSymbol(char character)
   int toX = charTable[tableIndex][0];
   int toY = charTable[tableIndex][1];
 
-  if (toX == -1 || toY == -1) {
+  if (toX == -1 || toY == -1 && can) {
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     can = false;
   }
 
-  if (tableIndex == -1 || tableIndex == -1) {
+  if (tableIndex == -1 || tableIndex == -1 && can) {
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list!");
     can = false;
   }
 
-  if (toX > MAX_X || toY > MAX_Y) {
+  if (toX > MAX_X || toY > MAX_Y && can) {
     Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Table Overflow)");
     can = false;
   }
 
   if (can) {
-    Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    //Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
     //line(toX, toY);
   }
@@ -252,7 +196,7 @@ void moveToSymbol(char character)
 
 bool shouldRelease = false;
 
-void move(int tx, int ty) { //Async sometime
+void move(int tx, int ty) {
 
   int dirX, dirY;
   int moveX, moveY;
@@ -288,8 +232,7 @@ void move(int tx, int ty) { //Async sometime
     dirY = FORWARD;
     moveY = ty - posY;
   }
-  //Serial.print("[DEBUG - TO] MX: "); Serial.print(moveX, DEC); Serial.print(" dirX: "); Serial.print(dirX, DEC); Serial.print(" TX: "); Serial.print(tx, DEC); Serial.println("");
-  //Serial.print("[DEBUG - TO] MY: "); Serial.print(moveY, DEC); Serial.print(" dirY: "); Serial.print(dirY, DEC); Serial.print(" TY: "); Serial.print(ty, DEC); Serial.println("");
+
   if (moveX != 0) {
     motorLR.step(moveX, dirX, DOUBLE);
   }
@@ -298,13 +241,9 @@ void move(int tx, int ty) { //Async sometime
   }
 
   update();
-  //if(shouldRelease){release();} //Potentally bad for line follower
-  //shouldRelease != shouldRelease;
-  //release();  // remove this if you are using the line function.
+  
   posX = tx;
   posY = ty;
-
-  //Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
 }
 
 void release()
@@ -371,19 +310,6 @@ void line(int x1, int y1) {
   }
 }
 
-void seekTest() {
-  motorLR.step(MAX_X, FORWARD, DOUBLE);
-  motorLR.release();
-  motorUD.step(MAX_Y, FORWARD, DOUBLE);
-  motorUD.release();
-  delay(50);
-  motorLR.step(MAX_X, BACKWARD, DOUBLE);
-  motorLR.release();
-  motorUD.step(MAX_Y, BACKWARD, DOUBLE);
-  motorUD.release();
-  delay(50);
-}
-
 void letterTest() {
   if (Serial.available() > 0) {
     char in = (char)Serial.read();
@@ -395,47 +321,3 @@ void letterTest() {
     release();
   }
 }
-
-void serialCalbrate() {
-  if (Serial.available() > 0) {
-    char in = (char)Serial.read();
-
-    if (in == 'w') {
-      move(posX, posY + 20);
-    }
-    else if (in == 'W') {
-      move(posX, posY + 50);
-    }
-
-    else if (in == 's') {
-      move(posX, posY - 20);
-    }
-    else if (in == 'S') {
-      move(posX, posY - 50);
-    }
-
-    else if (in == 'a') {
-      move(posX - 20, posY);
-    }
-    else if (in == 'A') {
-      move(posX - 50, posY);
-    }
-
-    else if (in == 'd') {
-      move(posX + 20, posY);
-    }
-    else if (in == 'D') {
-      move(posX + 50, posY);
-    }
-    else if (in == 'r') {
-      reset();
-    }
-
-    release();
-
-    //Serial.print("[DEBUG - POS] X: "); Serial.print(posX, DEC); Serial.print(" Y: "); Serial.print(posY, DEC); Serial.println("");
-  }
-}
-
-
-
