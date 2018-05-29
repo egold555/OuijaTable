@@ -63,13 +63,25 @@ int charTable[][3] = {
   //  -1, -1, '6',
   //  -1, -1, '8',
   //  -1, -1, '9',
-  800, 550, '+', //YES
-  1800, 550, '-', //NO
+  800, 520, '+', //YES
+  1800, 520, '-', //NO
   //  -1, -1, '!', //GOODBYE
-  1350, 550, '.' //SPACE
+  1350, 520, '.' //SPACE
+};
+
+char* messages[] {
+  "seattle.academy", 
+  //"hi.human",
+  "+",
+  "-",
+  "i.see.u",
+  "are.u.scared",
+  "i.am.here.too"
 };
 
 #define CHAR_TABLE_LEGTH (sizeof(charTable)/sizeof(charTable[0]))
+
+#define MESSAGES_TABLE_LENGTH (sizeof(messages)/sizeof(messages[0]))
 
 void setup() {
   Serial.begin(9600);
@@ -86,37 +98,17 @@ void setup() {
 
   Serial.println("[INFO] Resetting...");
   reset();
+  Serial.print("[INFO] Loaded "); Serial.print(MESSAGES_TABLE_LENGTH); Serial.print(" messages and "); Serial.print(CHAR_TABLE_LEGTH); Serial.println(" letters.");
   Serial.println("[INFO] Successfully Initalised!");
-  Serial.println("[INFO] Waiting 5 seconds");
+  
   delay(500);
 }
 
 //called everytime a message finishes
 void loop() {
   update();
-  char *msg = "eric.golde";
-  //    int mNum = random(0, 7);
-  //    if(mNum == 0){
-  //      msg = "behind.you";
-  //    }
-  //    else if(mNum == 1){
-  //      msg = "hello.human";
-  //    }
-  //    else if(mNum == 2){
-  //      msg = "+";
-  //    }
-  //    else if(mNum == 3){
-  //      msg = "-";
-  //    }
-  //    else if(mNum == 4){
-  //      msg = "i.see.you";
-  //    }
-  //    else if(mNum == 5){
-  //      msg = "are.you.scared";
-  //    }
-  //    else if(mNum == 6){
-  //      msg = "i.am.here.too";
-  //    }
+  char *msg = messages[random(0,MESSAGES_TABLE_LENGTH)];
+      
   spell(msg);
   ouijaDelay();
   spell(".");
@@ -153,48 +145,65 @@ void reset() {
 
 }
 
-// Number of milliseconds between updates of the LAMP
-const int INTERVAL = 70;
+//// Number of milliseconds between updates of the LAMP
+//const int INTERVAL = 70;
+//
+//const int PON_FAR = 1000;
+//const int POFF_FAR = 0;
+//const int PON_NEAR = 1000;
+//const int POFF_NEAR = 200; //Light flicker amount higher = more
+//
+//// Last time that the light was updated.
+//long last_millis = 0;
+//
+//void lightFlicker2()
+//{
+//  // Only process the light every INTERVAL milliseconds
+//  long current_millis = millis();
+//
+//  if (posX < 1300) {
+//    digitalWrite(LIGHT_PIN, LOW); //on
+//    return;
+//  }
+//
+//  if (current_millis - INTERVAL < last_millis) {
+//    return;
+//  }
+//
+//  last_millis = current_millis;
+//
+//  // Map the x position to a ON probability, ranging from PON_FAR to PON_NEAR
+//  int pon = map(posX, MIN_X, MAX_X, PON_FAR, PON_NEAR);
+//
+//  // Map the x position to an OFF probability, ranging from POFF_FAR to POFF_NEAR
+//  int poff = map(posX, MIN_X, MAX_X, POFF_FAR, POFF_NEAR);
+//
+//  // Use the probabilities to turn the light on or off.
+//  if (digitalRead(LIGHT_PIN)) {
+//    if (random(0, 1000) < pon) {
+//      digitalWrite(LIGHT_PIN, LOW); //on
+//    }
+//  }
+//  else {
+//    if (random(0, 1000) < poff) {
+//      digitalWrite(LIGHT_PIN, HIGH); //off
+//    }
+//  }
+//}
 
-const int PON_FAR = 1000;
-const int POFF_FAR = 0;
-const int PON_NEAR = 1000;
-const int POFF_NEAR = 200; //Light flicker amount higher = more
-
-// Last time that the light was updated.
-long last_millis = 0;
-
-void lightFlicker()
-{
-  // Only process the light every INTERVAL milliseconds
-  long current_millis = millis();
-
-  if (posX < 1300) {
-    return;
+void lightFlicker(){
+  bool lightIsOn = !digitalRead(LIGHT_PIN);
+  int randomChance = 4000;
+  if(!lightIsOn){
+    randomChance = 100;
+//    if(random(0, 1000) == 0){
+//      randomChance = 10000;
+//    }
+    
   }
 
-  if (current_millis - INTERVAL < last_millis) {
-    return;
-  }
-
-  last_millis = current_millis;
-
-  // Map the x position to a ON probability, ranging from PON_FAR to PON_NEAR
-  int pon = map(posX, MIN_X, MAX_X, PON_FAR, PON_NEAR);
-
-  // Map the x position to an OFF probability, ranging from POFF_FAR to POFF_NEAR
-  int poff = map(posX, MIN_X, MAX_X, POFF_FAR, POFF_NEAR);
-
-  // Use the probabilities to turn the light on or off.
-  if (digitalRead(LIGHT_PIN)) {
-    if (random(0, 1000) < pon) {
-      digitalWrite(LIGHT_PIN, LOW); //on
-    }
-  }
-  else {
-    if (random(0, 1000) < poff) {
-      digitalWrite(LIGHT_PIN, HIGH); //off
-    }
+  if(random(0, randomChance) == 0){
+    digitalWrite(LIGHT_PIN, lightIsOn);
   }
 }
 
@@ -241,6 +250,7 @@ void moveToSymbol(char character)
   }
 }
 
+bool shouldRelease = false;
 
 void move(int tx, int ty) { //Async sometime
 
@@ -288,6 +298,8 @@ void move(int tx, int ty) { //Async sometime
   }
 
   update();
+  //if(shouldRelease){release();} //Potentally bad for line follower
+  //shouldRelease != shouldRelease;
   //release();  // remove this if you are using the line function.
   posX = tx;
   posY = ty;
@@ -302,10 +314,10 @@ void release()
 }
 
 void spell(char* charArray) {
-  Serial.print("Printing Word: "); Serial.println(charArray);
+  Serial.print("[INFO] Printing Word: "); Serial.println(charArray);
   for (int i = 0; i <= 32; i++) {
     if (charArray[i] != 0) {
-      Serial.print("Character: "); Serial.println(charArray[i]);
+      //Serial.print("Character: "); Serial.println(charArray[i]);
       ouijaDelay();
       moveToSymbol(charArray[i]);
       ouijaDelay();
