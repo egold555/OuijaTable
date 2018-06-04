@@ -12,7 +12,7 @@ const int MAX_Y = 700;
 
 
 const int LIGHT_ON = 4000;
-const int LIGHT_OFF = 100;
+const int LIGHT_OFF = 50;
 
 //planchet's current position
 int posX = 0;
@@ -67,23 +67,27 @@ int charTable[][3] = {
 };
 
 char* messages[] {
-  "seattle.academy", 
-  //"hi.human",
   "+",
   "-",
   "i.see.u",
   "are.u.scared",
   "i.am.here.too",
-  "a.person.walks.into.a.bar..ouch",
   "its.those.darn.aliens",
-  "i.really.like.banannas",
   "i.was.born.at.a.very.young.age",
-  "supercalifragilisticexpialidocious",
-  "running.in.place.gets.you.nowhere.fast",
   "i.prefer.coke.over.pepsi",
   "no.paperclip..i.do.not.need.your.help",
   "you.do.know.there.are.no.real.vampires",
-  "sometimes.your.carpet.makes.me.really.angry"
+  "sometimes.your.carpet.makes.me.really.angry",
+  "eric.golde",
+  "tom.flood",
+  "sculpture.class.is.awesome",
+  "not.exactly.sure.what.to.say",
+  "i.am.a.ghost",
+  "hamlin.robinson.school",
+  "seattle.academy.of.arts.and.sciences",
+  "its.finally.summer",
+  "blqwjueybdhwuq",
+  "sculpture.saved.my.life" //tom
 };
 
 #define CHAR_TABLE_LEGTH (sizeof(charTable)/sizeof(charTable[0]))
