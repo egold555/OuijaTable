@@ -73,7 +73,17 @@ char* messages[] {
   "-",
   "i.see.u",
   "are.u.scared",
-  "i.am.here.too"
+  "i.am.here.too",
+  "a.person.walks.into.a.bar..ouch",
+  "its.those.darn.aliens",
+  "i.really.like.banannas",
+  "i.was.born.at.a.very.young.age",
+  "supercalifragilisticexpialidocious",
+  "running.in.place.gets.you.nowhere.fast",
+  "i.prefer.coke.over.pepsi",
+  "no.paperclip..i.do.not.need.your.help",
+  "you.do.know.there.are.no.real.vampires",
+  "sometimes.your.carpet.makes.me.really.angry"
 };
 
 #define CHAR_TABLE_LEGTH (sizeof(charTable)/sizeof(charTable[0]))
@@ -95,6 +105,7 @@ void setup() {
 
   Serial.println("[INFO] Resetting...");
   reset();
+  randomSeed(analogRead(0)); //Set the seed to a floating point number because random() gives same set of numbers on every bootup cause the arduino has no clock
   Serial.print("[INFO] Loaded "); Serial.print(MESSAGES_TABLE_LENGTH); Serial.print(" messages and "); Serial.print(CHAR_TABLE_LEGTH); Serial.println(" letters.");
   Serial.println("[INFO] Successfully Initalised!");
   
@@ -188,7 +199,7 @@ void moveToSymbol(char character)
   }
 
   if (can) {
-    //Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
     //line(toX, toY);
   }
@@ -241,7 +252,7 @@ void move(int tx, int ty) {
   }
 
   update();
-  
+  //release();
   posX = tx;
   posY = ty;
 }
