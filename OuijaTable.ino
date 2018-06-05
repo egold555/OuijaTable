@@ -70,24 +70,16 @@ char* messages[] {
   "+",
   "-",
   "i.see.u",
-  "are.u.scared",
+  "are.u.scared.+-",
   "i.am.here.too",
   "its.those.darn.aliens",
-  "i.was.born.at.a.very.young.age",
-  "i.prefer.coke.over.pepsi",
-  "no.paperclip..i.do.not.need.your.help",
-  "you.do.know.there.are.no.real.vampires",
-  "sometimes.your.carpet.makes.me.really.angry",
-  "eric.golde",
   "tom.flood",
-  "sculpture.class.is.awesome",
-  "not.exactly.sure.what.to.say",
   "i.am.a.ghost",
-  "hamlin.robinson.school",
-  "seattle.academy.of.arts.and.sciences",
-  "its.finally.summer",
-  "blqwjueybdhwuq",
-  "sculpture.saved.my.life" //tom
+  "i.need.to.see",
+  "ouija.board",
+  "good.bye",
+  "scary",
+  "he.is.behind.u.now"
 };
 
 #define CHAR_TABLE_LEGTH (sizeof(charTable)/sizeof(charTable[0]))
@@ -109,7 +101,9 @@ void setup() {
 
   Serial.println("[INFO] Resetting...");
   reset();
-  randomSeed(analogRead(0)); //Set the seed to a floating point number because random() gives same set of numbers on every bootup cause the arduino has no clock
+  float seed = analogRead(0);
+  randomSeed(seed); //Set the seed to a floating point number because random() gives same set of numbers on every bootup cause the arduino has no clock
+  Serial.print("[INFO] Set seed to: "); Serial.println(seed);
   Serial.print("[INFO] Loaded "); Serial.print(MESSAGES_TABLE_LENGTH); Serial.print(" messages and "); Serial.print(CHAR_TABLE_LEGTH); Serial.println(" letters.");
   Serial.println("[INFO] Successfully Initalised!");
   
@@ -124,7 +118,7 @@ void loop() {
   spell(msg);
   ouijaDelay();
   spell(".");
-  delayBetter(2000);
+  delayBetter(3000);
 }
 
 //Called by motor and by loop!
@@ -180,7 +174,7 @@ void moveToSymbol(char character)
 {
   boolean can = true;
   if (character <= 31) {
-    Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" is not a valid character!");
+    //Serial.print("[ERROR] Character "); Serial.print(character, DEC); Serial.println(" is not a valid character!");
     can = false;
   }
   int tableIndex = findSymbolInTable(character);
@@ -188,7 +182,7 @@ void moveToSymbol(char character)
   int toY = charTable[tableIndex][1];
 
   if (toX == -1 || toY == -1 && can) {
-    Serial.print("[ERROR] Character "); Serial.print(character); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    //Serial.print("[ERROR] Character "); Serial.print(character); Serial.print(" does not have a valid XY coords!"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     can = false;
   }
 
@@ -198,12 +192,12 @@ void moveToSymbol(char character)
   }
 
   if (toX > MAX_X || toY > MAX_Y && can) {
-    Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Table Overflow)");
+    //Serial.print("[ERROR] Character "); Serial.print(character); Serial.println(" does not exist in the character list! (Table Overflow)");
     can = false;
   }
 
   if (can) {
-    Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
+    //Serial.print("[DEBUG] Moving to character "); Serial.print(character); Serial.print(" ("); Serial.print(character, DEC); Serial.print(")"); Serial.print(" X: "); Serial.print(toX, DEC); Serial.print(" Y: "); + Serial.println(toY, DEC);
     move(toX, toY);
     //line(toX, toY);
   }
